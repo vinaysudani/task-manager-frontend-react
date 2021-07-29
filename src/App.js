@@ -1,6 +1,7 @@
-import { Fragment } from "react";
+import { Fragment, useContext, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router-dom";
+import axios from "axios";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -9,8 +10,21 @@ import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound.js";
+import AuthContext from "./store/auth-context";
 
 function App() {
+    const authCtx = useContext(AuthContext);
+    const authToken = authCtx.token;
+
+    useEffect(() => {
+        if (authToken !== null) {
+            axios.defaults.headers.common["Authorization"] =
+                "Bearer " + authToken;
+        } else {
+            delete axios.defaults.headers.common["Authorization"];
+        }
+    }, [authToken]);
+
     return (
         <Fragment>
             <Navbar></Navbar>

@@ -1,10 +1,41 @@
 import { useContext } from "react";
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useHistory } from "react-router-dom";
+import axios from "axios";
+
 import AuthContext from "../store/auth-context";
 
 const AppNavbar = () => {
     const authCtx = useContext(AuthContext);
+    const history = useHistory();
+
+    const logoutHandler = (logoutAll) => {
+        const url = logoutAll ? "/users/logoutAll" : "/users/logout";
+        axios
+            .post(url)
+            .then((res) => {
+                alert(res.data.message);
+            })
+            .catch((error) => {
+                let message = "Something went wrong";
+                if (
+                    error.response &&
+                    error.response.data &&
+                    error.response.data.message
+                ) {
+                    message = error.response.data.message;
+                }
+                alert(message);
+            })
+            .then(() => {
+                authCtx.setAuthData({
+                    token: null,
+                    userName: null,
+                });
+
+                history.push("/login");
+            });
+    };
 
     return (
         <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
@@ -37,10 +68,14 @@ const AppNavbar = () => {
                             <NavDropdown.Item as={NavLink} to="/profile" exact>
                                 Profile
                             </NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.2">
+                            <NavDropdown.Item
+                                onClick={logoutHandler.bind(null, false)}
+                            >
                                 Logout
                             </NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.3">
+                            <NavDropdown.Item
+                                onClick={logoutHandler.bind(null, true)}
+                            >
                                 Logout All
                             </NavDropdown.Item>
                         </NavDropdown>
