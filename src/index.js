@@ -1,17 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
+import axios from "axios";
 
 import "./assets/style.scss";
+
+import { AuthProvider } from "./store/auth-context";
 
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+axios.defaults.baseURL = "http://localhost:3000";
+
 ReactDOM.render(
     <React.StrictMode>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        <AuthProvider>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </AuthProvider>
     </React.StrictMode>,
     document.getElementById("root")
 );
