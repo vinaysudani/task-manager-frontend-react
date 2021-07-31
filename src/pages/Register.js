@@ -140,7 +140,11 @@ const Register = () => {
                             </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Button variant="primary" type="submit">
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            disabled={submitting}
+                        >
                             Submit{" "}
                             {submitting && (
                                 <Spinner

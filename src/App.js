@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect } from "react";
+import { Fragment, useCallback, useContext, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router-dom";
 import axios from "axios";
@@ -12,18 +12,31 @@ import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound.js";
 import AuthContext from "./store/auth-context";
 
+let isFirstRender = true;
+
 function App() {
     const authCtx = useContext(AuthContext);
     const authToken = authCtx.token;
 
-    useEffect(() => {
+    const setAxiosAuthToken = useCallback((authToken) => {
         if (authToken !== null) {
             axios.defaults.headers.common["Authorization"] =
                 "Bearer " + authToken;
         } else {
             delete axios.defaults.headers.common["Authorization"];
         }
-    }, [authToken]);
+    }, []);
+
+    if (isFirstRender) {
+        setAxiosAuthToken(authToken);
+    }
+
+    useEffect(() => {
+        if (!isFirstRender) {
+            setAxiosAuthToken(authToken);
+        }
+        isFirstRender = false;
+    }, [setAxiosAuthToken, authToken]);
 
     return (
         <Fragment>
