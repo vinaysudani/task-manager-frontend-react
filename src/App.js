@@ -12,6 +12,9 @@ import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound.js";
 import AuthContext from "./store/auth-context";
 
+import PrivateRoute from "./components/HOC/PrivateRoute";
+import GuestRoute from "./components/HOC/GuestRoute";
+
 let isFirstRender = true;
 
 function App() {
@@ -46,18 +49,21 @@ function App() {
                     <Route path="/" exact>
                         <Home />
                     </Route>
-                    <Route path="/login">
+
+                    <GuestRoute path="/login">
                         <Login />
-                    </Route>
-                    <Route path="/register">
+                    </GuestRoute>
+                    <GuestRoute path="/register">
                         <Register />
-                    </Route>
-                    <Route path="/tasks">
+                    </GuestRoute>
+
+                    <PrivateRoute path="/tasks">
                         <Tasks />
-                    </Route>
-                    <Route path="/profile">
+                    </PrivateRoute>
+                    <PrivateRoute path="/profile">
                         <Profile />
-                    </Route>
+                    </PrivateRoute>
+
                     <Route path="*">
                         <NotFound />
                     </Route>
