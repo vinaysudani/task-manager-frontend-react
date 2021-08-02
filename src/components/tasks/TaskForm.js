@@ -8,9 +8,9 @@ const TaskForm = (props) => {
     const [errorMessage, setErrorMessage] = useState(null);
     const [formErrors, setFormErrors] = useState({});
 
-    const [taskTitle, setTaskTitle] = useState(props.task.title);
+    const [taskTitle, setTaskTitle] = useState(props.task.title || "");
     const [taskDescription, setTaskDescription] = useState(
-        props.task.description
+        props.task.description || ""
     );
 
     const modalCloseHandler = () => {
@@ -39,8 +39,8 @@ const TaskForm = (props) => {
                 let data = res.data;
                 alert(data.message);
 
-                props.onSave();
                 modalCloseHandler();
+                props.onSave();
             })
             .catch((error) => {
                 if (

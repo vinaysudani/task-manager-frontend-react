@@ -22,8 +22,8 @@ const DeleteTask = (props) => {
                 let data = res.data;
                 alert(data.message);
 
-                props.onDelete();
                 modalCloseHandler();
+                props.onDelete();
             })
             .catch((error) => {
                 if (

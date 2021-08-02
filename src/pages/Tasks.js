@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment, useCallback } from "react";
 import {
     Row,
     Col,
@@ -10,22 +10,104 @@ import {
     ToggleButton,
     Alert,
 } from "react-bootstrap";
+import Pagination from "../components/UI/Pagination";
 
 import Task from "../components/tasks/Task";
 import TaskForm from "../components/tasks/TaskForm";
+
+let firstLoad = true;
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
-    const [taskStatus, setTaskStatus] = useState("all");
     const [totalRecords, setTotalRecords] = useState(0);
+
+    const [taskStatus, setTaskStatus] = useState("all");
+    const [sortBy, setSortBy] = useState("createdAt:asc");
+    const [perPage, setPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [addTask, setAddTask] = useState(false);
 
+    const fetchTasks = useCallback(
+        (params = {}) => {
+            const formParams = {
+                taskStatus: taskStatus,
+                sortBy: sortBy,
+                perPage: perPage,
+                currentPage: currentPage,
+                ...params,
+            };
+
+            let completed = null;
+            if (formParams.taskStatus === "complete") {
+                completed = true;
+            } else if (formParams.taskStatus === "incomplete") {
+                completed = false;
+            }
+
+            const formData = {
+                completed: completed,
+                sortBy: formParams.sortBy,
+                per_page: formParams.perPage,
+                current_page: formParams.currentPage,
+            };
+
+            setLoading(true);
+            axios
+                .get("/tasks", {
+                    params: formData,
+                })
+                .then((res) => {
+                    let tasks = res.data.tasks;
+                    let currentPage = res.data.pagination.current_page;
+
+                    setTasks(tasks);
+                    setTotalRecords(res.data.pagination.total_records);
+                    setErrorMessage(null);
+
+                    if (currentPage > 1 && tasks.length === 0) {
+                        setCurrentPage(currentPage - 1);
+                        fetchTasks({ currentPage: currentPage - 1 });
+                    }
+                })
+                .catch((error) => {
+                    let message = "Something went wrong";
+                    if (
+                        error.response &&
+                        error.response.data &&
+                        error.response.data.message
+                    ) {
+                        message = error.response.data.message;
+                    }
+                    setErrorMessage(message);
+                })
+                .then(() => {
+                    setLoading(false);
+                });
+        },
+        [taskStatus, sortBy, perPage, currentPage]
+    );
+
     const taskStatusChangeHandler = (value) => {
         setTaskStatus(value);
-        fetchTasks({ taskStatus: value });
+        setCurrentPage(1);
+        fetchTasks({ taskStatus: value, currentPage: 1 });
+    };
+
+    const sortByChangeHandler = (event) => {
+        const newValue = event.target.value;
+        setSortBy(newValue);
+        setCurrentPage(1);
+        fetchTasks({ sortBy: newValue, currentPage: 1 });
+    };
+
+    const perPageChangeHandler = (event) => {
+        const newValue = event.target.value;
+        setPerPage(newValue);
+        setCurrentPage(1);
+        fetchTasks({ perPage: newValue, currentPage: 1 });
     };
 
     const addTaskHandler = () => {
@@ -36,63 +118,17 @@ const Tasks = () => {
         setAddTask(false);
     };
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
-
-    const fetchTasks = (params = {}) => {
-        const formParams = {
-            taskStatus: taskStatus,
-            sortBy: "createdAt:asc",
-            perPage: 5,
-            currentPage: 1,
-            ...params,
-        };
-
-        let completed = null;
-        if (formParams.taskStatus === "complete") {
-            completed = true;
-        } else if (formParams.taskStatus === "incomplete") {
-            completed = false;
-        }
-
-        const formData = {
-            completed: completed,
-            sortBy: formParams.sortBy,
-            per_page: formParams.perPage,
-            current_page: formParams.currentPage,
-        };
-
-        setLoading(true);
-        axios
-            .get("/tasks", {
-                params: formData,
-            })
-            .then((res) => {
-                setTasks(res.data.tasks);
-                setTotalRecords(res.data.pagination.total_records);
-                setErrorMessage(null);
-
-                // if(this.current_page > 1 && this.tasks.length == 0) {
-                //     this.current_page = 1
-                //     this.fetchTasks()
-                // }
-            })
-            .catch((error) => {
-                let message = "Something went wrong";
-                if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.message
-                ) {
-                    message = error.response.data.message;
-                }
-                setErrorMessage(message);
-            })
-            .then(() => {
-                setLoading(false);
-            });
+    const pageChangeHandler = (newPage) => {
+        setCurrentPage(newPage);
+        fetchTasks({ currentPage: newPage });
     };
+
+    useEffect(() => {
+        if (firstLoad) {
+            fetchTasks();
+            firstLoad = false;
+        }
+    }, [fetchTasks]);
 
     return (
         <Row>
@@ -152,7 +188,12 @@ const Tasks = () => {
                     <Form.Group controlId="sortBy">
                         <Form.Label>Sort by:</Form.Label>
                         <div>
-                            <Form.Control as="select" custom>
+                            <Form.Control
+                                as="select"
+                                custom
+                                onChange={sortByChangeHandler}
+                                value={sortBy}
+                            >
                                 <option value="createdAt:asc">
                                     Created At (Oldest first)
                                 </option>
@@ -177,9 +218,9 @@ const Tasks = () => {
                 </Col>
             )}
 
-            {!loading && !errorMessage && (
+            {!errorMessage && (
                 <Fragment>
-                    {tasks.length === 0 && (
+                    {!loading && tasks.length === 0 && (
                         <Col sm={12} className="text-center">
                             <p>No tasks found</p>
                         </Col>
@@ -207,7 +248,12 @@ const Tasks = () => {
                             <div className="float-left">
                                 <Form.Group controlId="perPage">
                                     <Form.Label>Per page:</Form.Label>
-                                    <Form.Control as="select" custom>
+                                    <Form.Control
+                                        as="select"
+                                        custom
+                                        value={perPage}
+                                        onChange={perPageChangeHandler}
+                                    >
                                         <option value="5">5</option>
                                         <option value="10">10</option>
                                         <option value="50">50</option>
@@ -217,7 +263,16 @@ const Tasks = () => {
                             </div>
                         )}
 
-                        <div className="float-right">Pagination</div>
+                        {totalRecords > perPage && (
+                            <div className="float-right mt-4">
+                                <Pagination
+                                    onChange={pageChangeHandler}
+                                    currentPage={currentPage}
+                                    perPage={perPage}
+                                    totalRecords={totalRecords}
+                                />
+                            </div>
+                        )}
                     </Col>
                 </Fragment>
             )}
