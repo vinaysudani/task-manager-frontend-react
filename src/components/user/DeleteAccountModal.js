@@ -64,7 +64,6 @@ const DeleteAcccountModal = (props) => {
                             <Form.Check
                                 type="checkbox"
                                 checked={confirmDelete}
-                                ClassName="mr-0"
                                 onChange={confirmChangeHandler}
                             />
                         </div>
