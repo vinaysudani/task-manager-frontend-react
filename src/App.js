@@ -2,6 +2,7 @@ import { Fragment, useCallback, useContext, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router-dom";
 import axios from "axios";
+import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -43,6 +44,7 @@ function App() {
 
     return (
         <Fragment>
+            <Toaster />
             <Navbar></Navbar>
             <Container fluid>
                 <Switch>

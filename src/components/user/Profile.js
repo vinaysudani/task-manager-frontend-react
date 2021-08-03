@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Card, Alert, Spinner, Form, Button } from "react-bootstrap";
 import AuthContext from "../../store/auth-context";
+import toast from "react-hot-toast";
 
 const Profile = () => {
     const [loading, setLoading] = useState(false);
@@ -82,7 +83,7 @@ const Profile = () => {
                 const data = res.data;
                 setUser(data.user);
                 authCtx.setUserName(data.user.name);
-                alert(data.message);
+                toast.success(data.message);
 
                 setFormErrors({});
                 setSubmittingError(null);

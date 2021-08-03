@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Card, Alert, Form, Button, Spinner } from "react-bootstrap";
+import toast from "react-hot-toast";
 
 const ChangePassword = () => {
     const [errorMessage, setErrorMessage] = useState(null);
@@ -37,7 +38,7 @@ const ChangePassword = () => {
             .patch("/users/me/password", formData)
             .then((res) => {
                 const data = res.data;
-                alert(data.message);
+                toast.success(data.message);
 
                 setCurrentPassword("");
                 setNewPassword("");

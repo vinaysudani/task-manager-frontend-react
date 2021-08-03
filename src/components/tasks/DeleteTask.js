@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Spinner, Alert } from "react-bootstrap";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const DeleteTask = (props) => {
     const [showModal, setShowModal] = useState(true);
@@ -20,7 +21,7 @@ const DeleteTask = (props) => {
             .delete(`/tasks/${props.task._id}`)
             .then((res) => {
                 let data = res.data;
-                alert(data.message);
+                toast.success(data.message);
 
                 modalCloseHandler();
                 props.onDelete();

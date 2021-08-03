@@ -2,6 +2,7 @@ import { Card, Form, Button } from "react-bootstrap";
 import moment from "moment";
 import { useState, Fragment } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 import TaskForm from "./TaskForm";
 import DeleteTask from "./DeleteTask";
@@ -63,7 +64,7 @@ const Task = (props) => {
                 ) {
                     message = error.response.data.message;
                 }
-                alert(message);
+                toast.error(message);
                 setIsCompleted(!newStatus);
             });
     };

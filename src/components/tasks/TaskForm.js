@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const TaskForm = (props) => {
     const [showModal, setShowModal] = useState(true);
@@ -37,7 +38,7 @@ const TaskForm = (props) => {
         request
             .then((res) => {
                 let data = res.data;
-                alert(data.message);
+                toast.success(data.message);
 
                 modalCloseHandler();
                 props.onSave();

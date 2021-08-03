@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { Link, NavLink, useHistory } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 import AuthContext from "../store/auth-context";
 
@@ -14,7 +15,7 @@ const AppNavbar = () => {
         axios
             .post(url)
             .then((res) => {
-                alert(res.data.message);
+                toast.success(res.data.message);
             })
             .catch((error) => {
                 let message = "Something went wrong";
@@ -25,7 +26,7 @@ const AppNavbar = () => {
                 ) {
                     message = error.response.data.message;
                 }
-                alert(message);
+                toast.error(message);
             })
             .then(() => {
                 authCtx.setAuthData({

@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Row, Card, Alert, Form, Button, Spinner } from "react-bootstrap";
 import axios from "axios";
 import AuthContext from "../store/auth-context";
+import toast from "react-hot-toast";
 
 const Register = () => {
     const [submitting, setSubmitting] = useState(false);
@@ -33,7 +34,7 @@ const Register = () => {
             .post("/users", formData)
             .then((res) => {
                 let data = res.data;
-                alert(data.message);
+                toast.success(data.message);
 
                 let authData = {
                     token: data.token,

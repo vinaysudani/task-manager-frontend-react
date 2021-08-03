@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Modal, Alert, Button, Spinner, Form } from "react-bootstrap";
+import toast from "react-hot-toast";
 
 const DeleteAcccountModal = (props) => {
     const [showModal, setShowModal] = useState(true);
@@ -24,7 +25,7 @@ const DeleteAcccountModal = (props) => {
             .delete("/users/me")
             .then((res) => {
                 let data = res.data;
-                alert(data.message);
+                toast.success(data.message);
 
                 setErrorMessage(null);
                 setSubmitting(false);
