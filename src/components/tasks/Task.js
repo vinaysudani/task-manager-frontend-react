@@ -8,6 +8,8 @@ import TaskForm from "./TaskForm";
 import DeleteTask from "./DeleteTask";
 import TaskDetail from "./TaskDetail";
 
+import "./Task.scss";
+
 const Task = (props) => {
     const [editTask, setEditTask] = useState(false);
     const [deleteTask, setDeleteTask] = useState(false);
@@ -71,7 +73,7 @@ const Task = (props) => {
 
     return (
         <Fragment>
-            <Card className="my-1">
+            <Card className="my-1 task">
                 <Card.Body>
                     <div className="float-left">
                         <Form.Check
@@ -79,10 +81,11 @@ const Task = (props) => {
                             inline
                             checked={isCompleted}
                             onChange={completeChangeHandler}
+                            className="custom-checkbox"
                         />
 
-                        <span>{props.task.title}</span>
-                        <span className="ml-1 text-muted">
+                        <span className="task-title">{props.task.title}</span>
+                        <span className="task-description ml-1 text-muted">
                             {props.task.description}
                         </span>
                     </div>
