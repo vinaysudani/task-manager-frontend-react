@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useContext, useEffect } from "react";
 import { Container } from "react-bootstrap";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 
@@ -20,6 +20,9 @@ let isFirstRender = true;
 
 function App() {
     const authCtx = useContext(AuthContext);
+    const history = useHistory();
+    const location = useLocation();
+
     const authToken = authCtx.token;
 
     const setAxiosAuthToken = useCallback((authToken) => {
@@ -32,6 +35,21 @@ function App() {
     }, []);
 
     if (isFirstRender) {
+        axios.interceptors.response.use(undefined, (error) => {
+            if (error.response && error.response.status === 401) {
+                authCtx.setAuthData({
+                    token: null,
+                    userName: null,
+                });
+
+                history.push({
+                    pathname: "/login",
+                    search: `?redirect=${location.pathname}`,
+                });
+            }
+            return Promise.reject(error);
+        });
+
         setAxiosAuthToken(authToken);
     }
 
