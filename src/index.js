@@ -10,7 +10,7 @@ import { AuthProvider } from "./store/auth-context";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
 ReactDOM.render(
     <React.StrictMode>
