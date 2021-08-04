@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useContext, useEffect } from "react";
 import { Container } from "react-bootstrap";
-import { Route, Switch, useHistory, useLocation } from "react-router-dom";
+import { Switch, useHistory, useLocation } from "react-router-dom";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 
@@ -13,8 +13,7 @@ import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound.js";
 import AuthContext from "./store/auth-context";
 
-import PrivateRoute from "./components/HOC/PrivateRoute";
-import GuestRoute from "./components/HOC/GuestRoute";
+import AppRoute from "./components/HOC/AppRoute";
 
 let isFirstRender = true;
 
@@ -66,27 +65,27 @@ function App() {
             <Navbar></Navbar>
             <Container fluid>
                 <Switch>
-                    <Route path="/" exact>
+                    <AppRoute path="/" exact title="Home">
                         <Home />
-                    </Route>
+                    </AppRoute>
 
-                    <GuestRoute path="/login">
+                    <AppRoute path="/login" guest title="Login">
                         <Login />
-                    </GuestRoute>
-                    <GuestRoute path="/register">
+                    </AppRoute>
+                    <AppRoute path="/register" guest title="Register">
                         <Register />
-                    </GuestRoute>
+                    </AppRoute>
 
-                    <PrivateRoute path="/tasks">
+                    <AppRoute path="/tasks" auth title="Tasks">
                         <Tasks />
-                    </PrivateRoute>
-                    <PrivateRoute path="/profile">
+                    </AppRoute>
+                    <AppRoute path="/profile" auth title="Profile">
                         <Profile />
-                    </PrivateRoute>
+                    </AppRoute>
 
-                    <Route path="*">
+                    <AppRoute path="*">
                         <NotFound />
-                    </Route>
+                    </AppRoute>
                 </Switch>
             </Container>
         </Fragment>
