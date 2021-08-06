@@ -14,7 +14,7 @@ axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
 
 ReactDOM.render(
     <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={process.env.REACT_APP_ROUTER_BASE_URI}>
             <App />
         </BrowserRouter>
     </AuthProvider>,
